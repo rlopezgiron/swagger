@@ -1,4 +1,4 @@
-package com.test.swagger.service;
+package com.test.swagger.service.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,12 +7,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.test.swagger.model.TestItem;
+import com.test.swagger.service.TestService;
 
 @Service
 public class TestServiceImpl implements TestService {
 
 	@Override
 	public List<TestItem> findAll() {
+		
+		//TODO: create a repository
 		
 		List<TestItem> list = new ArrayList<>();
 		
