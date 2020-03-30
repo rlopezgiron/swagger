@@ -1,19 +1,22 @@
 package com.test.swagger.config;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.classmate.TypeResolver;
-
+import com.google.common.base.Predicates;
 
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -33,13 +36,16 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
+	
+	private static final String PRIVATE_PACKAGE_CONTROLLER = "com.test.swagger.controller.privateApi";
+	private static final String PUBLIC_PACKAGE_CONTROLLER = "com.test.swagger.controller.publicApi";
 
 	@Bean
     public Docket publicSwaggerApi() {
         return new Docket(DocumentationType.SWAGGER_2).groupName("publicApi")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.test.swagger.controller.publicApi"))
-                //.paths(PathSelectors.any())        
+                .apis(Predicates.and(RequestHandlerSelectors.withClassAnnotation(RestController.class),
+                		             RequestHandlerSelectors.basePackage(PUBLIC_PACKAGE_CONTROLLER)))       
                 .paths(PathSelectors.regex("/public.*"))
                 .build()
                 .apiInfo(apiInfo()).globalResponseMessage(RequestMethod.GET, responseMessages ())
@@ -50,12 +56,14 @@ public class SwaggerConfig implements WebMvcConfigurer {
     public Docket privateSwaggerApi() {
         return new Docket(DocumentationType.SWAGGER_2).groupName("privateApi")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.test.swagger.controller.privateApi")) 
+                .apis(Predicates.and(RequestHandlerSelectors.withClassAnnotation(RestController.class),
+                					 RequestHandlerSelectors.basePackage(PRIVATE_PACKAGE_CONTROLLER)))
                 .paths(PathSelectors.regex("/private.*"))
                 .build()
                 .apiInfo(apiInfo()).globalResponseMessage(RequestMethod.GET, responseMessages ())
                 .alternateTypeRules(alternateRule());
     }
+	
 	 
 	private AlternateTypeRule alternateRule () {
 		TypeResolver typeResolver = new TypeResolver();
