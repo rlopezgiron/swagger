@@ -15,6 +15,6 @@ import io.swagger.annotations.Tag;
 })
 public interface IPublicController {
 
-	@ApiOperation(value = "Private: Get all test items")
+	@ApiOperation(value = "Public: Get all test items")
 	public List<TestItem> findAll();
 }
